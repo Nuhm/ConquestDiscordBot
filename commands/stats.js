@@ -26,16 +26,16 @@ module.exports = {
       if (closestMatch) {
         const stats = await getPlayerStats(closestMatch);
         if (stats) {
-          await interaction.reply(`Stats for ${closestMatch}: Kills: ${stats.kills}, Deaths: ${stats.deaths}`);
+          await interaction.reply({content: `Stats for ${closestMatch}: Kills: ${stats.kills}, Deaths: ${stats.deaths}`, ephemeral: true});
         } else {
-          await interaction.reply(`Player stats not found for ${closestMatch}.`);
+          await interaction.reply({content: `Player stats not found for ${closestMatch}.`, ephemeral: true});
         }
       } else {
-        await interaction.reply(`No close matches found for ${playerName}.`);
+        await interaction.reply({content: `No close matches found for ${playerName}.`, ephemeral: true});
       }
     } catch (error) {
       console.error('Error finding closest match or fetching player stats:', error);
-      await interaction.reply('An error occurred while finding the closest match or fetching player stats.');
+      await interaction.reply({content: `An error occurred while finding the closest match or fetching player stats.`, ephemeral: true});
     }
   },
 };

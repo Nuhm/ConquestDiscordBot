@@ -41,7 +41,7 @@ module.exports = {
       await interaction.reply({ content: leaderboardMessage, ephemeral: true });
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
-      await interaction.reply('An error occurred while fetching the leaderboard.');
+      await interaction.reply({ content: 'An error occurred while fetching the leaderboard.', ephemeral: true });
     }
   },
 };
