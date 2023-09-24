@@ -1,5 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 
+const cooldowns = new Map();
+
 module.exports = {
   data: {
     name: 'suggestion',
@@ -14,6 +16,20 @@ module.exports = {
     ],
   },
   async execute(interaction) {
+    const authorId = interaction.user.id;
+
+    // Check if the user is on cooldown
+    if (cooldowns.has(authorId)) {
+      const cooldownTime = cooldowns.get(authorId);
+      const now = Date.now();
+      const timeLeft = (cooldownTime - now) / 1000; // Convert to seconds
+
+      if (timeLeft > 0) {
+        await interaction.reply({ content: `You are on cooldown. Please wait ${timeLeft.toFixed(1)} seconds.`, ephemeral: true });
+        return;
+      }
+    }
+
     const suggestion = interaction.options.getString('suggestion');
     const words = suggestion.split(/\s+/); // Split input into words using whitespace as the delimiter
 
@@ -22,6 +38,10 @@ module.exports = {
         return;
     }
     try {
+      const cooldownTimeMs = 15000; // 15 seconds
+      const cooldownExpiry = Date.now() + cooldownTimeMs;
+      cooldowns.set(authorId, cooldownExpiry);
+
       const suggestionChannelId = '1141856075717558396'; // Replace with the ID of your suggestions channel
       // Fetch the suggestions channel
       const suggestionChannel = await interaction.client.channels.fetch(suggestionChannelId);
