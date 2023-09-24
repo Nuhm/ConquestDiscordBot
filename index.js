@@ -8,7 +8,8 @@ const { findClosestMatch, getPlayerStats } = require('./utils'); // Import the f
 const commands = [
   require('./commands/stats'), // Import your command
   require('./commands/leaderboard'),
-  require('./commands/suggestion')
+  require('./commands/suggestion'),
+  require('./commands/approve')
 ];
 
 // Set up the command handler
