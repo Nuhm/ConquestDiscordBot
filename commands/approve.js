@@ -58,6 +58,20 @@ module.exports = {
       // Edit the original message to replace the embed with the updated one
       originalMessage.edit({ embeds: [updatedEmbed] });
 
+      const approvedChannelId = '1155610363572785222';
+      const approvedChannel = await interaction.client.channels.fetch(approvedChannelId);
+
+      const newEmbed = new EmbedBuilder()
+        .setColor('#55ff55')
+        .setTitle(originalMessage.embeds[0].title)
+        .setDescription(originalMessage.embeds[0].description)
+        .setAuthor({ name: authorName, iconURL: authorAvatarURL})
+        .setTimestamp()
+        .setFooter({ text: 'Approved', iconURL: serverIconURL });
+
+      // Send the suggestion in the approved suggestions channel
+      await approvedChannel.send({ embeds: [newEmbed] });
+
       // Send a response to the user
       await interaction.reply({ content: 'Message approved and updated successfully.', ephemeral: true });
     } catch (error) {
