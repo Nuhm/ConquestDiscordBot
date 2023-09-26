@@ -6,10 +6,11 @@ const { Routes } = require('discord-api-types/v9');
 const { findClosestMatch, getPlayerStats } = require('./utils'); // Import the functions
 
 const commands = [
-  require('./commands/stats'), // Import your command
+  require('./commands/stats'),
   require('./commands/leaderboard'),
   require('./commands/suggestion'),
-  require('./commands/approve')
+  require('./commands/approve'),
+  require('./commands/testsummarywebhook')
 ];
 
 // Set up the command handler
