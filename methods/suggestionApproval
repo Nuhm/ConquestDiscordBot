@@ -1,0 +1,117 @@
+const { EmbedBuilder } = require('discord.js');
+const fs = require('fs').promises;
+const path = require('path');
+
+async function approveSuggestion(client, messageId) {
+   try {
+      // Load existing suggestion IDs from the JSON file
+      const suggestionIDs = await loadSuggestionIDs();
+      
+      const suggestionChannelId = '1141856075717558396';
+      const suggestionChannel = await client.channels.fetch(suggestionChannelId);
+
+      if (!suggestionChannel) {
+      throw new Error('Suggestion channel not found.');
+      }
+
+      // Fetch the original message using the message ID
+      const originalMessage = await suggestionChannel.messages.fetch(messageId);
+
+      // Check if the original message exists and has embeds
+      if (!originalMessage || !originalMessage.embeds || originalMessage.embeds.length === 0) {
+      throw new Error('Message not found or has no embeds.');
+      }
+
+      // Extract the author information from the original message
+      const authorName = originalMessage.embeds[0].author ? originalMessage.embeds[0].author.name : 'Unknown Author';
+      const authorAvatarURL = originalMessage.embeds[0].author ? originalMessage.embeds[0].author.iconURL : 'https://www.pornhub.com/';
+
+      // Get the server icon URL
+      const serverIconURL = client.guilds.cache.get('1141856074543145071').iconURL({ format: 'png', size: 4096 });
+
+      // Create a new MessageEmbed with the updated content
+      const updatedEmbed = new EmbedBuilder()
+         .setColor('#55ff55')
+         .setTitle(originalMessage.embeds[0].title)
+         .setDescription(originalMessage.embeds[0].description)
+         .setAuthor({ name: authorName, iconURL: authorAvatarURL })
+         .setTimestamp()
+         .setFooter({ text: 'Approved', iconURL: serverIconURL });
+
+      // Edit the original message to replace the embed with the updated one
+      await originalMessage.edit({ embeds: [updatedEmbed] });
+
+      const approvedChannelId = '1155610363572785222';
+      const approvedChannel = await client.channels.fetch(approvedChannelId);
+
+      const newEmbed = new EmbedBuilder()
+         .setColor('#55ff55')
+         .setTitle(originalMessage.embeds[0].title)
+         .setDescription(originalMessage.embeds[0].description)
+         .setAuthor({ name: authorName, iconURL: authorAvatarURL })
+         .setTimestamp()
+         .setFooter({ text: 'Approved', iconURL: serverIconURL });
+
+      // Remove the processed suggestion ID from the list
+      const indexToRemove = suggestionIDs.indexOf(messageId);
+      if (indexToRemove !== -1) {
+         suggestionIDs.splice(indexToRemove, 1);
+      }
+
+      // Save the updated list back to the JSON file to remove the suggestion ID
+      await saveSuggestionID(messageId);
+
+      // Send the suggestion in the approved suggestions channel
+      await approvedChannel.send({ embeds: [newEmbed] });
+   } catch (error) {
+      throw error; // Re-throw the error for handling in the execute function
+   }
+}
+
+async function loadSuggestionIDs() {
+   try {
+      const filePath = path.join(__dirname, '..', 'data', 'suggestionIDs.json');
+      const data = await fs.readFile(filePath, 'utf8');
+
+      // Check if the data is empty
+      if (!data) {
+         return [];
+      }
+
+      return JSON.parse(data);
+   } catch (error) {
+      if (error.code === 'ENOENT') {
+         // File doesn't exist, return an empty array
+         return [];
+      }
+      console.error('Error loading suggestion IDs:', error);
+      return [];
+   }
+}
+
+ 
+
+async function saveSuggestionID(newID) {
+   try {
+      const filePath = path.join(__dirname, '..', 'data', 'suggestionIDs.json');
+      const existingIDs = await loadSuggestionIDs();
+
+      // Check if the newID is not already in the array
+      if (!existingIDs.includes(newID)) {
+         existingIDs.push(newID); // Add the new ID
+         const data = JSON.stringify(existingIDs);
+         await fs.writeFile(filePath, data, 'utf8');
+      }
+   } catch (error) {
+      console.error('Error saving suggestion ID:', error);
+   }
+}
+
+ 
+
+// Export the function
+module.exports = {
+  approveSuggestion,
+  loadSuggestionIDs,
+  saveSuggestionID,
+};
