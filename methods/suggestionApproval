@@ -29,9 +29,7 @@ async function approveSuggestion(client, messageId, approvedById) {
       // Extract the author information from the original message
       const authorName = originalMessage.embeds[0].author ? originalMessage.embeds[0].author.name : 'Unknown Author';
       const authorAvatarURL = originalMessage.embeds[0].author ? originalMessage.embeds[0].author.iconURL : 'https://www.pornhub.com/';
-
-      // Get the server icon URL
-      const serverIconURL = client.guilds.cache.get('1141856074543145071').iconURL({ format: 'png', size: 4096 });
+      const serverIconURL = 'https://cdn.discordapp.com/attachments/1141856075251978428/1144995467189567529/cqicon.png?ex=6516d920&is=651587a0&hm=c3a9e5e6b8f5bd10ff9214655379614992abd049274da4921e7cc9080f21b9f4&';
 
       // Create a new MessageEmbed with the updated content
       const updatedEmbed = new EmbedBuilder()
