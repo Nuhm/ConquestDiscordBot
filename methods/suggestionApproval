@@ -5,13 +5,17 @@ const path = require('path');
 async function approveSuggestion(client, messageId) {
    try {
       // Load existing suggestion IDs from the JSON file
-      const suggestionIDs = await loadSuggestionIDs();
-      
+      let suggestionIDs = await loadSuggestionIDs();
+
+      if (!Array.isArray(suggestionIDs)) {
+         suggestionIDs = []; // Initialize as an empty array if not an array
+      }
+
       const suggestionChannelId = '1141856075717558396';
       const suggestionChannel = await client.channels.fetch(suggestionChannelId);
 
       if (!suggestionChannel) {
-      throw new Error('Suggestion channel not found.');
+         throw new Error('Suggestion channel not found.');
       }
 
       // Fetch the original message using the message ID
@@ -19,7 +23,7 @@ async function approveSuggestion(client, messageId) {
 
       // Check if the original message exists and has embeds
       if (!originalMessage || !originalMessage.embeds || originalMessage.embeds.length === 0) {
-      throw new Error('Message not found or has no embeds.');
+         throw new Error('Message not found or has no embeds.');
       }
 
       // Extract the author information from the original message
@@ -52,14 +56,11 @@ async function approveSuggestion(client, messageId) {
          .setTimestamp()
          .setFooter({ text: 'Approved', iconURL: serverIconURL });
 
-      // Remove the processed suggestion ID from the list
-      const indexToRemove = suggestionIDs.indexOf(messageId);
-      if (indexToRemove !== -1) {
-         suggestionIDs.splice(indexToRemove, 1);
-      }
+      // Use filter to remove the processed suggestion ID from the list
+      suggestionIDs = suggestionIDs.filter(id => id !== messageId);
 
       // Save the updated list back to the JSON file to remove the suggestion ID
-      await saveSuggestionID(messageId);
+      await saveSuggestionIDs(suggestionIDs);
 
       // Send the suggestion in the approved suggestions channel
       await approvedChannel.send({ embeds: [newEmbed] });
@@ -89,9 +90,17 @@ async function loadSuggestionIDs() {
    }
 }
 
- 
+async function saveSuggestionIDs(updatedIDs) {
+   try {
+      const filePath = path.join(__dirname, '..', 'data', 'suggestionIDs.json');
+      const data = JSON.stringify(updatedIDs); // Serialize the updatedIDs array to JSON
+      await fs.writeFile(filePath, data, 'utf8');
+   } catch (error) {
+      console.error('Error saving suggestion IDs:', error);
+   }
+}
 
-async function saveSuggestionID(newID) {
+async function addSuggestionID(newID) {
    try {
       const filePath = path.join(__dirname, '..', 'data', 'suggestionIDs.json');
       const existingIDs = await loadSuggestionIDs();
@@ -107,11 +116,10 @@ async function saveSuggestionID(newID) {
    }
 }
 
- 
-
 // Export the function
 module.exports = {
   approveSuggestion,
   loadSuggestionIDs,
-  saveSuggestionID,
+  saveSuggestionIDs,
+  addSuggestionID,
 };

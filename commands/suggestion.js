@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 
-const { saveSuggestionID } = require('../methods/suggestionApproval');
+const { addSuggestionID } = require('../methods/suggestionApproval');
 
 const cooldowns = new Map();
 
@@ -72,7 +72,7 @@ module.exports = {
       suggestionMessage.react('✅');
 
       // Save the suggestion ID when a suggestion is created
-      await saveSuggestionID(suggestionMessage.id); // Pass the new suggestion ID
+      await addSuggestionID(suggestionMessage.id);
 
       // Send a response to the user
       await interaction.reply({ content: 'Suggestion submitted successfully.', ephemeral: true });
