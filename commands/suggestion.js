@@ -55,15 +55,16 @@ module.exports = {
 
       const authorName = interaction.user.username; // Get the author's username
       const authorAvatarURL = interaction.user.displayAvatarURL({ format: 'png', size: 4096 }); // Get the author's profile image URL
-      const serverIconURL = interaction.guild.iconURL({ format: 'png', size: 4096 }); // Get the server icon URL
-
+      const serverIconURL = 'https://cdn.discordapp.com/attachments/1141856075251978428/1144995467189567529/cqicon.png?ex=6516d920&is=651587a0&hm=c3a9e5e6b8f5bd10ff9214655379614992abd049274da4921e7cc9080f21b9f4&';
       const embed = new EmbedBuilder()
         .setColor('#f5f5f5')
-        .setTitle('Suggestion')
-        .setDescription(suggestion)
-        .setAuthor({ name: authorName, iconURL: authorAvatarURL})
+        .addFields(
+          { name: 'Suggestion:', value: suggestion },
+          { name: 'Suggested By:', value: `<@${interaction.user.id}>` },
+        )
+        .setAuthor({ name: `${authorName}`, iconURL: authorAvatarURL})
         .setTimestamp()
-        .setFooter({ text: 'Conquest Suggestion', iconURL: serverIconURL });
+        .setFooter({ text: `Bot provided by Mikey`, iconURL: serverIconURL });
 
       // Send the suggestion in the suggestions channel
       const suggestionMessage = await suggestionChannel.send({ embeds: [embed] });

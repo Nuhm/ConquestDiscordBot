@@ -2,7 +2,7 @@ const { EmbedBuilder } = require('discord.js');
 const fs = require('fs').promises;
 const path = require('path');
 
-async function approveSuggestion(client, messageId) {
+async function approveSuggestion(client, messageId, approvedById) {
    try {
       // Load existing suggestion IDs from the JSON file
       let suggestionIDs = await loadSuggestionIDs();
@@ -36,11 +36,15 @@ async function approveSuggestion(client, messageId) {
       // Create a new MessageEmbed with the updated content
       const updatedEmbed = new EmbedBuilder()
          .setColor('#55ff55')
-         .setTitle(originalMessage.embeds[0].title)
-         .setDescription(originalMessage.embeds[0].description)
-         .setAuthor({ name: authorName, iconURL: authorAvatarURL })
+         .addFields(
+            { name: 'Suggestion:', value: originalMessage.embeds[0].fields.find(field => field.name === 'Suggestion:').value },
+            { name: 'Suggested By:', value: originalMessage.embeds[0].fields.find(field => field.name === 'Suggested By:').value },
+            { name: 'Approved By:', value: `<@${approvedById}>` },
+         )
+         .setAuthor({ name: `${authorName} suggested:`, iconURL: authorAvatarURL })
          .setTimestamp()
-         .setFooter({ text: 'Approved', iconURL: serverIconURL });
+         .setFooter({ text: `Bot provided by Mikey`, iconURL: serverIconURL });
+
 
       // Edit the original message to replace the embed with the updated one
       await originalMessage.edit({ embeds: [updatedEmbed] });
@@ -50,11 +54,14 @@ async function approveSuggestion(client, messageId) {
 
       const newEmbed = new EmbedBuilder()
          .setColor('#55ff55')
-         .setTitle(originalMessage.embeds[0].title)
-         .setDescription(originalMessage.embeds[0].description)
-         .setAuthor({ name: authorName, iconURL: authorAvatarURL })
+         .addFields(
+            { name: 'Suggestion:', value: originalMessage.embeds[0].fields.find(field => field.name === 'Suggestion:').value },
+            { name: 'Suggested By:', value: originalMessage.embeds[0].fields.find(field => field.name === 'Suggested By:').value },
+            { name: 'Approved By:', value: `<@${approvedById}>` },
+         )
+         .setAuthor({ name: `${authorName} suggested:`, iconURL: authorAvatarURL })
          .setTimestamp()
-         .setFooter({ text: 'Approved', iconURL: serverIconURL });
+         .setFooter({ text: `Bot provided by Mikey`, iconURL: serverIconURL });
 
       // Use filter to remove the processed suggestion ID from the list
       suggestionIDs = suggestionIDs.filter(id => id !== messageId);
