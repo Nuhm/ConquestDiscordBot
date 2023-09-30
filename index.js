@@ -42,8 +42,20 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_BOT_TOKEN)
   }
 })();
 
-client.on('ready', () => {
+client.on('ready', async () => {
   console.log('Bot is ready!');
+
+  // Replace 'YOUR_GUILD_ID' with your server's ID
+  const guild = client.guilds.cache.get('1141856074543145071');
+
+  if (!guild) {
+    console.error('Guild not found.');
+    return;
+  }
+
+  console.log("Guild found");
+
+  await guild.roles.fetch();
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -69,15 +81,47 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if (message.channel.id === '1141856075717558396') {
       const approvedById = user.id; // Get the user ID who reacted with "✅"
 
-      // Call the approveSuggestion function to handle the approval
-      try {
-        await approveSuggestion(client, message.id, approvedById); // Pass the client, message ID, and user ID
-      } catch (error) {
-        console.error('Error approving suggestion:', error);
+      // Fetch the GuildMember object for the user
+      const guild = client.guilds.cache.get('1141856074543145071'); // Replace with your guild ID
+
+      if (!guild) {
+        console.error('Guild not found.');
+        return;
+      }
+
+      if (message.guild) {
+        const member = guild.members.cache.get(user.id);
+        //console.log(member);
+
+        const roleName = "Helper";
+        const role = guild.roles.cache.find((r) => r.name.toLowerCase() === roleName.toLowerCase());
+
+        if (!role) {
+          console.log("There is no role with the name:", roleName);
+          return; // Exit the function if the role is not found
+        }
+
+        console.log("Role found:", role.name);
+
+        if (!member.roles.cache.has(role.id)) {
+          console.log("User doesn't have the required role");
+          return;
+        }
+
+        // Call the approveSuggestion function to handle the approval
+        try {
+          await approveSuggestion(client, message.id, approvedById); // Pass the client, message ID, and user ID
+        } catch (error) {
+          console.error('Error approving suggestion:', error);
+        }
+      } else {
+        console.error('Message is not from a guild text channel.');
       }
     }
   }
 });
+
+
 
 
 client.login(process.env.DISCORD_BOT_TOKEN);
