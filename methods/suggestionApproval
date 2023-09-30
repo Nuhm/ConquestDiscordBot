@@ -39,7 +39,6 @@ async function approveSuggestion(client, messageId, approvedById) {
             { name: 'Suggested By:', value: originalMessage.embeds[0].fields.find(field => field.name === 'Suggested By:').value },
             { name: 'Approved By:', value: `<@${approvedById}>` },
          )
-         .setAuthor({ name: `${authorName} suggested:`, iconURL: authorAvatarURL })
          .setTimestamp()
          .setFooter({ text: `Bot provided by Mikey`, iconURL: serverIconURL });
 
@@ -57,7 +56,6 @@ async function approveSuggestion(client, messageId, approvedById) {
             { name: 'Suggested By:', value: originalMessage.embeds[0].fields.find(field => field.name === 'Suggested By:').value },
             { name: 'Approved By:', value: `<@${approvedById}>` },
          )
-         .setAuthor({ name: `${authorName} suggested:`, iconURL: authorAvatarURL })
          .setTimestamp()
          .setFooter({ text: `Bot provided by Mikey`, iconURL: serverIconURL });
 

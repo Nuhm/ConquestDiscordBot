@@ -62,7 +62,6 @@ module.exports = {
           { name: 'Suggestion:', value: suggestion },
           { name: 'Suggested By:', value: `<@${interaction.user.id}>` },
         )
-        .setAuthor({ name: `${authorName}`, iconURL: authorAvatarURL})
         .setTimestamp()
         .setFooter({ text: `Bot provided by Mikey`, iconURL: serverIconURL });
 
