@@ -53,9 +53,30 @@ client.on('ready', async () => {
     return;
   }
 
-  console.log("Guild found");
-
   await guild.roles.fetch();
+  await guild.channels.fetch();
+
+  const suggestionChannel = guild.channels.cache.get('1141856075717558396'); // Replace with your suggestion channel ID
+
+  if (!suggestionChannel) {
+    console.error('Suggestion channel not found.');
+    return;
+  }
+
+  try {
+    // Load the list of suggestion message IDs from suggestionIDs.json
+    const suggestionMessageIDs = require('./data/suggestionIDs.json');
+
+    for (const messageID of suggestionMessageIDs) {
+      const message = await suggestionChannel.messages.fetch(messageID);
+      if (!message) {
+        console.error(`Message with ID ${messageID} not found.`);
+        continue;
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching and processing messages:', error);
+  }
 });
 
 client.on('interactionCreate', async (interaction) => {
@@ -73,6 +94,8 @@ client.on('interactionCreate', async (interaction) => {
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
+  const message = await reaction.message.fetch();
+  console.log("Reaction added");
   // Check if the reaction is "✅" and the user is not a bot
   if (reaction.emoji.name === '✅' && !user.bot) {
     const message = reaction.message;
