@@ -26,7 +26,7 @@ module.exports = {
       const serverIconURL = 'https://cdn.discordapp.com/attachments/1141856075251978428/1144995467189567529/cqicon.png?ex=6516d920&is=651587a0&hm=c3a9e5e6b8f5bd10ff9214655379614992abd049274da4921e7cc9080f21b9f4&';
       if (closestMatch) {
         const stats = await getPlayerStats(closestMatch);
-        // name, kills, deaths, kd, headshotaccuray, headshots
+        
         const headshotAccuracy = ((stats.headshots / stats.kills) * 100).toFixed(2);
         if (stats) {
           const embed = new EmbedBuilder()
@@ -37,7 +37,7 @@ module.exports = {
               { name: 'Total Deaths:', value: `${stats.deaths}`, inline: true, },
               { name: 'KDR:', value: `${stats.kdr.toFixed(2)}`, inline: true, },
               { name: 'Headshot Kills:', value: `${stats.headshots}`, inline: true, },
-              { name: 'Headshot Accurarcy:', value: `${headshotAccuracy} %`, inline: true, },
+              { name: 'Headshot Accuracy:', value: `${headshotAccuracy} %`, inline: true, },
             )
             .setTimestamp()
             .setFooter({ text: 'Bot provided by Mikey', iconURL: serverIconURL });
