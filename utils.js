@@ -40,7 +40,7 @@ async function getPlayerStats(playerName) {
     const connection = await pool.getConnection();
 
     // Define your SQL query to retrieve player stats for the closest match
-    const query = 'SELECT kills, deaths FROM gameplayerstats WHERE username = ?';
+    const query = 'SELECT kills, deaths, kdr, headshots FROM gameplayerstats WHERE username = ?';
 
     // Execute the query with the provided closest matched player name
     const [rows] = await connection.execute(query, [playerName]);
@@ -54,8 +54,8 @@ async function getPlayerStats(playerName) {
     }
 
     // Extract and return the player stats
-    const { kills, deaths } = rows[0];
-    return { kills, deaths };
+    const { kills, deaths, kdr, headshots } = rows[0];
+    return { kills, deaths, kdr, headshots };
   } catch (error) {
     console.error('Error fetching player stats:', error);
     throw error;
