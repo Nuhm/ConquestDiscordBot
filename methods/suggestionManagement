@@ -26,9 +26,6 @@ async function approveSuggestion(client, messageId, approvedById) {
          throw new Error('Message not found or has no embeds.');
       }
 
-      // Extract the author information from the original message
-      const authorName = originalMessage.embeds[0].author ? originalMessage.embeds[0].author.name : 'Unknown Author';
-      const authorAvatarURL = originalMessage.embeds[0].author ? originalMessage.embeds[0].author.iconURL : 'https://www.pornhub.com/';
       const serverIconURL = 'https://cdn.discordapp.com/attachments/1141856075251978428/1144995467189567529/cqicon.png?ex=6516d920&is=651587a0&hm=c3a9e5e6b8f5bd10ff9214655379614992abd049274da4921e7cc9080f21b9f4&';
 
       // Create a new MessageEmbed with the updated content
@@ -67,6 +64,57 @@ async function approveSuggestion(client, messageId, approvedById) {
 
       // Send the suggestion in the approved suggestions channel
       await approvedChannel.send({ embeds: [newEmbed] });
+   } catch (error) {
+      throw error; // Re-throw the error for handling in the execute function
+   }
+}
+
+async function rejectSuggestion(client, messageId, rejectedById) {
+   try {
+      // Load existing suggestion IDs from the JSON file
+      let suggestionIDs = await loadSuggestionIDs();
+
+      if (!Array.isArray(suggestionIDs)) {
+         suggestionIDs = []; // Initialize as an empty array if not an array
+      }
+
+      const suggestionChannelId = '1141856075717558396';
+      const suggestionChannel = await client.channels.fetch(suggestionChannelId);
+
+      if (!suggestionChannel) {
+         throw new Error('Suggestion channel not found.');
+      }
+
+      // Fetch the original message using the message ID
+      const originalMessage = await suggestionChannel.messages.fetch(messageId);
+
+      // Check if the original message exists and has embeds
+      if (!originalMessage || !originalMessage.embeds || originalMessage.embeds.length === 0) {
+         throw new Error('Message not found or has no embeds.');
+      }
+
+      const serverIconURL = 'https://cdn.discordapp.com/attachments/1141856075251978428/1144995467189567529/cqicon.png?ex=6516d920&is=651587a0&hm=c3a9e5e6b8f5bd10ff9214655379614992abd049274da4921e7cc9080f21b9f4&';
+
+      // Create a new MessageEmbed with the updated content
+      const updatedEmbed = new EmbedBuilder()
+         .setColor('#ff5555')
+         .addFields(
+            { name: 'Suggestion:', value: originalMessage.embeds[0].fields.find(field => field.name === 'Suggestion:').value },
+            { name: 'Suggested By:', value: originalMessage.embeds[0].fields.find(field => field.name === 'Suggested By:').value },
+            { name: 'Rejected By:', value: `<@${rejectedById}>` },
+         )
+         .setTimestamp()
+         .setFooter({ text: `Bot provided by Mikey`, iconURL: serverIconURL });
+
+
+      // Edit the original message to replace the embed with the updated one
+      await originalMessage.edit({ embeds: [updatedEmbed] });
+
+      // Use filter to remove the processed suggestion ID from the list
+      suggestionIDs = suggestionIDs.filter(id => id !== messageId);
+
+      // Save the updated list back to the JSON file to remove the suggestion ID
+      await saveSuggestionIDs(suggestionIDs);
    } catch (error) {
       throw error; // Re-throw the error for handling in the execute function
    }
@@ -122,6 +170,7 @@ async function addSuggestionID(newID) {
 // Export the function
 module.exports = {
   approveSuggestion,
+  rejectSuggestion,
   loadSuggestionIDs,
   saveSuggestionIDs,
   addSuggestionID,

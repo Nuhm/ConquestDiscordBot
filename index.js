@@ -21,7 +21,7 @@ const commands = [
 ];
 
 // Import the approveSuggestion function from the correct path
-const { approveSuggestion } = require('./methods/suggestionApproval');
+const { approveSuggestion, rejectSuggestion } = require('./methods/suggestionManagement');
 
 // Set up the command handler
 const commandsArray = commands.map(command => command.data);
@@ -95,7 +95,6 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('messageReactionAdd', async (reaction, user) => {
   const message = await reaction.message.fetch();
-  console.log("Reaction added");
   // Check if the reaction is "✅" and the user is not a bot
   if (reaction.emoji.name === '✅' && !user.bot) {
     const message = reaction.message;
@@ -124,8 +123,6 @@ client.on('messageReactionAdd', async (reaction, user) => {
           return; // Exit the function if the role is not found
         }
 
-        console.log("Role found:", role.name);
-
         if (!member.roles.cache.has(role.id)) {
           console.log("User doesn't have the required role");
           return;
@@ -136,6 +133,49 @@ client.on('messageReactionAdd', async (reaction, user) => {
           await approveSuggestion(client, message.id, approvedById); // Pass the client, message ID, and user ID
         } catch (error) {
           console.error('Error approving suggestion:', error);
+        }
+      } else {
+        console.error('Message is not from a guild text channel.');
+      }
+    }
+  }
+  if (reaction.emoji.name === '❎' && !user.bot) {
+    const message = reaction.message;
+
+    // Check if the message is in the suggestion channel
+    if (message.channel.id === '1141856075717558396') {
+      const rejectedById = user.id; // Get the user ID who reacted with "❎"
+
+      // Fetch the GuildMember object for the user
+      const guild = client.guilds.cache.get('1141856074543145071'); // Replace with your guild ID
+
+      if (!guild) {
+        console.error('Guild not found.');
+        return;
+      }
+
+      if (message.guild) {
+        const member = guild.members.cache.get(user.id);
+        //console.log(member);
+
+        const roleName = "Helper";
+        const role = guild.roles.cache.find((r) => r.name.toLowerCase() === roleName.toLowerCase());
+
+        if (!role) {
+          console.log("There is no role with the name:", roleName);
+          return; // Exit the function if the role is not found
+        }
+
+        if (!member.roles.cache.has(role.id)) {
+          console.log("User doesn't have the required role");
+          return;
+        }
+
+        // Call the rejectSuggestion function to handle the rejection
+        try {
+          await rejectSuggestion(client, message.id, rejectedById); // Pass the client, message ID, and user ID
+        } catch (error) {
+          console.error('Error rejecting suggestion:', error);
         }
       } else {
         console.error('Message is not from a guild text channel.');

@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 
-const { addSuggestionID } = require('../methods/suggestionApproval');
+const { addSuggestionID } = require('../methods/suggestionManagement');
 
 const cooldowns = new Map();
 
