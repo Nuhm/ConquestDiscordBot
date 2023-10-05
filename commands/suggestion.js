@@ -69,7 +69,6 @@ module.exports = {
       const suggestionMessage = await suggestionChannel.send({ embeds: [embed] });
       suggestionMessage.react('👍');
       suggestionMessage.react('👎');
-      suggestionMessage.react('✅');
 
       // Save the suggestion ID when a suggestion is created
       await addSuggestionID(suggestionMessage.id);
