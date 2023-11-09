@@ -1,9 +1,0 @@
-Added summary of reactors in the approval message
-Allow a react emoji to approve a suggestion
-Add permissions to /approve
-
-Approved suggestions channel
-Add suggestions cooldown
-Auto reactions; thumbs up, down, heart Extract
-Command to call suggestions
-Command can be done anywhere (message is private anyways)
